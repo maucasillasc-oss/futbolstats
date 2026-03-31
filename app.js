@@ -90,12 +90,21 @@ function findTeamInText(text) {
 }
 
 async function processCapture() {
+  if (!cameraReady) {
+    // Si la cámara no está lista, abrir selector de archivo
+    $('#file-input').click();
+    return;
+  }
+
   const video = $('#camera');
   const canvas = $('#capture-canvas');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0);
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  await processCanvasOCR(canvas);
+}
+
+async function processCanvasOCR(canvas) {
 
   // Preprocesar: recortar la parte superior e inferior donde suelen estar los marcadores
   // Las transmisiones ponen el marcador arriba (10-25% de la pantalla)
@@ -236,16 +245,69 @@ async function searchAndShowTeam(teamName) {
 }
 
 // --- Camera ---
+let cameraReady = false;
+
 async function initCamera() {
+  const scanText = $('.scan-text');
+  scanText.textContent = 'Iniciando cámara...';
+
+  // Verificar si el navegador soporta getUserMedia
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    scanText.textContent = '⚠️ Tu navegador no soporta cámara. Usa el botón 📷 para subir foto.';
+    showGalleryFallback();
+    return;
+  }
+
   try {
+    // Intentar cámara trasera primero
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
     });
-    $('#camera').srcObject = stream;
+    const video = $('#camera');
+    video.srcObject = stream;
+    await video.play();
+    cameraReady = true;
+    scanText.textContent = '📸 Enfoca el marcador del partido y captura';
   } catch (err) {
     console.error('Camera error:', err);
-    $('.scan-text').textContent = 'No se pudo acceder a la cámara. Usa el buscador.';
+    if (err.name === 'NotAllowedError') {
+      scanText.textContent = '⚠️ Permiso de cámara denegado. Actívalo en ajustes o sube una foto.';
+    } else if (err.name === 'NotFoundError') {
+      scanText.textContent = '⚠️ No se encontró cámara. Usa el botón 📷 para subir foto.';
+    } else {
+      scanText.textContent = `⚠️ Error de cámara: ${err.message}. Usa el botón 📷.`;
+    }
+    showGalleryFallback();
   }
+}
+
+function showGalleryFallback() {
+  // Mostrar botón de subir imagen si la cámara no funciona
+  const controls = $('.camera-controls');
+  if (!$('#btn-gallery')) {
+    const btn = document.createElement('button');
+    btn.id = 'btn-gallery';
+    btn.className = 'btn-action';
+    btn.textContent = '📷 Subir Foto';
+    btn.addEventListener('click', () => $('#file-input').click());
+    controls.insertBefore(btn, controls.firstChild);
+  }
+}
+
+function processImageFromFile(file) {
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = $('#capture-canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      await processCanvasOCR(canvas);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 // --- API ---
@@ -433,6 +495,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Event listeners
   $('#btn-capture').addEventListener('click', processCapture);
+
+  $('#file-input').addEventListener('change', (e) => {
+    if (e.target.files[0]) processImageFromFile(e.target.files[0]);
+    e.target.value = ''; // Reset para permitir seleccionar la misma imagen
+  });
 
   $('#btn-search').addEventListener('click', () => {
     showScreen('search');
