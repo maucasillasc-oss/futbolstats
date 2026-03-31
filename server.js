@@ -13,6 +13,8 @@ const AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY || '';
 const AWS_SECRET_KEY = process.env.AWS_SECRET_KEY || '';
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 
+const ODDS_API_KEY = process.env.ODDS_API_KEY || '469b71b8a45248c9e7039776794d4b26';
+
 const MIME = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -163,6 +165,28 @@ const server = http.createServer((req, res) => {
       espnRes.on('data', c => data += c);
       espnRes.on('end', () => {
         res.writeHead(espnRes.statusCode, { 'Content-Type': 'application/json' });
+        res.end(data);
+      });
+    }).on('error', (err) => {
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: err.message }));
+    });
+    return;
+  }
+
+  // Odds API proxy
+  if (req.url.startsWith('/odds/')) {
+    const sport = req.url.slice(6).split('?')[0];
+    const oddsPath = `/v4/sports/${sport}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h&oddsFormat=decimal`;
+    https.get({
+      hostname: 'api.the-odds-api.com',
+      path: oddsPath,
+      headers: { 'Accept': 'application/json' },
+    }, (oddsRes) => {
+      let data = '';
+      oddsRes.on('data', c => data += c);
+      oddsRes.on('end', () => {
+        res.writeHead(oddsRes.statusCode, { 'Content-Type': 'application/json' });
         res.end(data);
       });
     }).on('error', (err) => {
