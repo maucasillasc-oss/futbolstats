@@ -35,21 +35,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  background: rgba(0,0,0,0.9);
+  padding: 10px;
+  background: #000;
+  z-index: 10;
 }
 
 .logo-header img {
-  height: 32px;
+  height: 40px;
   object-fit: contain;
 }
 
 /* Camera */
 .camera-container {
-  flex: 1;
+  height: 50vh;
+  max-height: 50vh;
   position: relative;
   overflow: hidden;
   background: #000;
+  flex-shrink: 0;
 }
 
 #camera {
