@@ -1,0 +1,17 @@
+{
+  "name": "FutbolStats",
+  "short_name": "FutbolStats",
+  "description": "Estadísticas de fútbol en vivo desde tu cámara",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

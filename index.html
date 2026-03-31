@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>FutbolStats - Estadísticas en Vivo</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Tesseract.js OCR engine -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Pantalla de cámara -->
+    <div id="camera-screen" class="screen active">
+      <div class="camera-container">
+        <video id="camera" autoplay playsinline></video>
+        <div class="camera-overlay">
+          <div class="scan-frame"></div>
+          <p class="scan-text">📸 Enfoca el marcador del partido y captura</p>
+        </div>
+      </div>
+      <div class="camera-controls">
+        <button id="btn-capture" class="btn-circle" aria-label="Capturar y analizar">
+          <svg viewBox="0 0 24 24" width="32" height="32"><circle cx="12" cy="12" r="10" fill="white"/></svg>
+        </button>
+        <button id="btn-search" class="btn-action" aria-label="Buscar equipo">
+          🔍 Buscar Equipo
+        </button>
+      </div>
+    </div>
+
+    <!-- Pantalla de resultados OCR -->
+    <div id="ocr-screen" class="screen">
+      <button id="btn-back-ocr" class="btn-back" aria-label="Volver">← Volver a cámara</button>
+      <div id="ocr-content" style="flex:1;overflow-y:auto"></div>
+    </div>
+
+    <!-- Pantalla de búsqueda -->
+    <div id="search-screen" class="screen">
+      <div class="search-header">
+        <button id="btn-back-search" class="btn-back" aria-label="Volver">←</button>
+        <input type="text" id="search-input" placeholder="Nombre del equipo..." autocomplete="off">
+      </div>
+      <div id="search-results" class="results-list"></div>
+    </div>
+
+    <!-- Pantalla de estadísticas -->
+    <div id="stats-screen" class="screen">
+      <button id="btn-back-stats" class="btn-back" aria-label="Volver">← Volver</button>
+      <div id="stats-content" style="flex:1;overflow-y:auto"></div>
+    </div>
+
+    <!-- Pantalla de partido -->
+    <div id="match-screen" class="screen">
+      <button id="btn-back-match" class="btn-back" aria-label="Volver">← Volver</button>
+      <div id="match-content" style="flex:1;overflow-y:auto"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+  </div>
+
+  <canvas id="capture-canvas" style="display:none"></canvas>
+  <script src="app.js"></script>
+</body>
+</html>
