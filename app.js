@@ -517,6 +517,89 @@ function renderESPNStats(data) {
     </div>
     <div class="section-title">Partidos de la Temporada</div>
     ${matchCards || '<div class="no-results">Sin partidos registrados</div>'}`;
+
+  // Cargar momios
+  loadOddsForTeam(team.displayName, 'soccer_mexico_ligamx');
+}
+
+// --- Momios / Odds ---
+async function loadOddsForTeam(teamName, sport) {
+  try {
+    const res = await fetch(`/odds/${sport}`);
+    const games = await res.json();
+    if (!Array.isArray(games)) return;
+
+    const teamGames = games.filter(g =>
+      g.home_team.toLowerCase().includes(teamName.toLowerCase()) ||
+      g.away_team.toLowerCase().includes(teamName.toLowerCase()) ||
+      teamName.toLowerCase().includes(g.home_team.toLowerCase()) ||
+      teamName.toLowerCase().includes(g.away_team.toLowerCase())
+    );
+
+    if (teamGames.length === 0) return;
+    renderOdds(teamGames);
+  } catch (err) {
+    console.error('Odds error:', err);
+  }
+}
+
+function renderOdds(games) {
+  let html = '<div class="section-title">🎰 Momios - Próximos Partidos</div>';
+
+  games.forEach(game => {
+    const date = new Date(game.commence_time).toLocaleDateString('es', {
+      weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+
+    // Tomar el mejor momio de cada resultado entre todas las casas
+    let bestHome = { price: 0, book: '' };
+    let bestDraw = { price: 0, book: '' };
+    let bestAway = { price: 0, book: '' };
+
+    (game.bookmakers || []).forEach(bk => {
+      const market = bk.markets?.find(m => m.key === 'h2h');
+      if (!market) return;
+      market.outcomes.forEach(o => {
+        if (o.name === game.home_team && o.price > bestHome.price) {
+          bestHome = { price: o.price, book: bk.title };
+        } else if (o.name === game.away_team && o.price > bestAway.price) {
+          bestAway = { price: o.price, book: bk.title };
+        } else if (o.name === 'Draw' && o.price > bestDraw.price) {
+          bestDraw = { price: o.price, book: bk.title };
+        }
+      });
+    });
+
+    html += `
+      <div style="margin:4px 16px;background:#16213e;border-radius:10px;padding:14px">
+        <div style="text-align:center;margin-bottom:8px">
+          <div style="font-size:15px;font-weight:600">${game.home_team} vs ${game.away_team}</div>
+          <div style="font-size:11px;color:#888">${date}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-align:center">
+          <div style="background:#0a2a1a;border-radius:8px;padding:10px">
+            <div style="font-size:11px;color:#888">Local</div>
+            <div style="font-size:22px;font-weight:700;color:#00ff88">${bestHome.price.toFixed(2)}</div>
+            <div style="font-size:9px;color:#555">${bestHome.book}</div>
+          </div>
+          <div style="background:#1a1a0a;border-radius:8px;padding:10px">
+            <div style="font-size:11px;color:#888">Empate</div>
+            <div style="font-size:22px;font-weight:700;color:#ffcc00">${bestDraw.price.toFixed(2)}</div>
+            <div style="font-size:9px;color:#555">${bestDraw.book}</div>
+          </div>
+          <div style="background:#2a0a0a;border-radius:8px;padding:10px">
+            <div style="font-size:11px;color:#888">Visitante</div>
+            <div style="font-size:22px;font-weight:700;color:#ff6666">${bestAway.price.toFixed(2)}</div>
+            <div style="font-size:9px;color:#555">${bestAway.book}</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:6px;font-size:10px;color:#444">${game.bookmakers?.length || 0} casas de apuestas comparadas</div>
+      </div>`;
+  });
+
+  // Append al stats-content existente
+  const container = $('#stats-content');
+  if (container) container.innerHTML += html;
 }
 
 function renderTeamStats(team, matches) {
@@ -557,6 +640,16 @@ function renderTeamStats(team, matches) {
         <div class="match-date">${new Date(m.utcDate).toLocaleDateString('es')}</div></div>
         <div class="match-score">${hs} - ${as}</div></div>`;
     }).join('')}`;
+
+  // Detectar liga para cargar momios
+  const area = (team.area?.name || '').toLowerCase();
+  let sport = '';
+  if (area.includes('spain')) sport = 'soccer_spain_la_liga';
+  else if (area.includes('england')) sport = 'soccer_epl';
+  else if (area.includes('germany')) sport = 'soccer_germany_bundesliga';
+  else if (area.includes('italy')) sport = 'soccer_italy_serie_a';
+  else if (area.includes('france')) sport = 'soccer_france_ligue_one';
+  if (sport) loadOddsForTeam(team.shortName || team.name, sport);
 }
 
 function showMatchDetail(match) {
