@@ -47,8 +47,8 @@ body {
 
 /* Camera */
 .camera-container {
-  height: 50vh;
-  max-height: 50vh;
+  height: 70vh;
+  max-height: 70vh;
   position: relative;
   overflow: hidden;
   background: #000;
