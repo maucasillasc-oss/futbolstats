@@ -151,6 +151,27 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ESPN API proxy (Liga MX y otras)
+  if (req.url.startsWith('/espn/')) {
+    const espnPath = req.url.slice(5);
+    https.get({
+      hostname: 'site.api.espn.com',
+      path: espnPath,
+      headers: { 'Accept': 'application/json' },
+    }, (espnRes) => {
+      let data = '';
+      espnRes.on('data', c => data += c);
+      espnRes.on('end', () => {
+        res.writeHead(espnRes.statusCode, { 'Content-Type': 'application/json' });
+        res.end(data);
+      });
+    }).on('error', (err) => {
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: err.message }));
+    });
+    return;
+  }
+
   // Static files
   let filePath = req.url === '/' ? '/index.html' : req.url.split('?')[0];
   filePath = path.join(__dirname, filePath);
