@@ -523,18 +523,54 @@ function renderESPNStats(data) {
 }
 
 // --- Momios / Odds ---
+// Mapeo de nombres ESPN → nombres en The Odds API
+const ODDS_NAME_MAP = {
+  'américa': 'América', 'america': 'América',
+  'guadalajara': 'Guadalajara', 'chivas': 'Guadalajara',
+  'cruz azul': 'Cruz Azul',
+  'monterrey': 'Monterrey', 'rayados': 'Monterrey',
+  'tigres uanl': 'Tigres', 'tigres': 'Tigres',
+  'pumas unam': 'Pumas', 'pumas': 'Pumas',
+  'toluca': 'Toluca',
+  'santos laguna': 'Santos Laguna', 'santos': 'Santos Laguna',
+  'león': 'León', 'leon': 'León',
+  'pachuca': 'Pachuca',
+  'atlas': 'Atlas',
+  'necaxa': 'Necaxa',
+  'puebla': 'Puebla',
+  'querétaro': 'Querétaro', 'queretaro': 'Querétaro',
+  'tijuana': 'Tijuana',
+  'mazatlán fc': 'Mazatlán FC', 'mazatlan': 'Mazatlán FC',
+  'fc juárez': 'FC Juárez', 'fc juarez': 'FC Juárez', 'juárez': 'FC Juárez',
+  'atlético de san luis': 'Atlético San Luis', 'san luis': 'Atlético San Luis',
+  // Europeos
+  'real madrid cf': 'Real Madrid', 'real madrid': 'Real Madrid',
+  'fc barcelona': 'Barcelona', 'barcelona': 'Barcelona',
+  'manchester city fc': 'Manchester City', 'manchester city': 'Manchester City',
+  'liverpool fc': 'Liverpool', 'liverpool': 'Liverpool',
+  'arsenal fc': 'Arsenal', 'arsenal': 'Arsenal',
+  'fc bayern münchen': 'Bayern Munich', 'bayern munich': 'Bayern Munich',
+};
+
+function normalizeTeamName(name) {
+  const lower = name.toLowerCase().trim();
+  return ODDS_NAME_MAP[lower] || name;
+}
+
 async function loadOddsForTeam(teamName, sport) {
   try {
     const res = await fetch(`/odds/${sport}`);
     const games = await res.json();
-    if (!Array.isArray(games)) return;
+    if (!Array.isArray(games) || games.length === 0) return;
 
-    const teamGames = games.filter(g =>
-      g.home_team.toLowerCase().includes(teamName.toLowerCase()) ||
-      g.away_team.toLowerCase().includes(teamName.toLowerCase()) ||
-      teamName.toLowerCase().includes(g.home_team.toLowerCase()) ||
-      teamName.toLowerCase().includes(g.away_team.toLowerCase())
-    );
+    const normalized = normalizeTeamName(teamName);
+    const teamGames = games.filter(g => {
+      const home = g.home_team.toLowerCase();
+      const away = g.away_team.toLowerCase();
+      const search = normalized.toLowerCase();
+      return home.includes(search) || away.includes(search) ||
+             search.includes(home) || search.includes(away);
+    });
 
     if (teamGames.length === 0) return;
     renderOdds(teamGames);
