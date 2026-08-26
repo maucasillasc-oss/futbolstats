@@ -254,43 +254,46 @@ async function processImage(canvas) {
 function showOCRResults(result, imageData) {
   showScreen('ocr');
   const { teams, textLines, labels, method } = result;
-  const methodLabel = method === 'rekognition' ? '🟢 AWS Rekognition' : '🟡 OCR Local (Tesseract)';
+  const methodLabel = method === 'rekognition' ? '🟢 AWS Rekognition' : '🟡 OCR Local';
 
-  let html = `<div style="padding:12px">
-    <img src="${imageData}" style="width:100%;border-radius:8px;margin-bottom:12px" alt="Captura">
-    <p style="font-size:11px;color:#555;margin-bottom:8px">Analizado con: ${methodLabel}</p>`;
+  let html = `<div style="padding:12px">`;
 
+  // 1. Resultado del reconocimiento PRIMERO (visible sin scroll)
   if (teams.length >= 2) {
     html += `
-      <div style="background:#0a2a1a;border:1px solid #00ff88;border-radius:10px;padding:16px;margin-bottom:12px;text-align:center">
-        <p style="font-size:13px;color:#00ff88;margin-bottom:8px">🏟️ Partido detectado</p>
-        <p style="font-size:24px;font-weight:700;margin-bottom:12px">${teams[0].name} vs ${teams[1].name}</p>
-        <button onclick="loadTeamStats('${teams[0].id}')" class="btn-action" style="margin:4px;font-size:14px">📊 ${teams[0].name}</button>
-        <button onclick="loadTeamStats('${teams[1].id}')" class="btn-action" style="margin:4px;font-size:14px">📊 ${teams[1].name}</button>
+      <div style="background:#0a2a1a;border:1px solid #00ff88;border-radius:10px;padding:14px;margin-bottom:10px;text-align:center">
+        <p style="font-size:12px;color:#00ff88;margin-bottom:6px">🏟️ Partido detectado</p>
+        <p style="font-size:20px;font-weight:700;margin-bottom:10px">${teams[0].name} vs ${teams[1].name}</p>
+        <button onclick="loadTeamStats('${teams[0].id}')" class="btn-action" style="margin:3px;font-size:13px">📊 ${teams[0].name}</button>
+        <button onclick="loadTeamStats('${teams[1].id}')" class="btn-action" style="margin:3px;font-size:13px">📊 ${teams[1].name}</button>
       </div>`;
   } else if (teams.length === 1) {
     html += `
-      <div style="background:#0a2a1a;border:1px solid #00ff88;border-radius:10px;padding:16px;margin-bottom:12px;text-align:center">
-        <p style="color:#00ff88;font-size:14px;margin-bottom:8px">⚽ Equipo detectado</p>
-        <p style="font-size:22px;font-weight:700;margin-bottom:12px">${teams[0].name}</p>
-        <button onclick="loadTeamStats('${teams[0].id}')" class="btn-action" style="font-size:14px">📊 Ver estadísticas</button>
+      <div style="background:#0a2a1a;border:1px solid #00ff88;border-radius:10px;padding:14px;margin-bottom:10px;text-align:center">
+        <p style="color:#00ff88;font-size:13px;margin-bottom:6px">⚽ Equipo detectado</p>
+        <p style="font-size:20px;font-weight:700;margin-bottom:10px">${teams[0].name}</p>
+        <button onclick="loadTeamStats('${teams[0].id}')" class="btn-action" style="font-size:13px">📊 Ver estadísticas</button>
       </div>`;
   } else {
     html += `
-      <div style="background:#2a1a0a;border:1px solid #ff8800;border-radius:10px;padding:16px;margin-bottom:12px">
-        <p style="color:#ff8800;font-size:14px">🔍 No se detectaron equipos</p>
-        <p style="color:#888;font-size:13px;margin-top:8px">Intenta enfocar el marcador de la transmisión o acercar más la cámara al texto.</p>
-        <button onclick="showScreen('search');$('#search-input').focus()" class="btn-action" style="margin-top:12px;width:100%">🔍 Buscar manualmente</button>
+      <div style="background:#2a1a0a;border:1px solid #ff8800;border-radius:10px;padding:14px;margin-bottom:10px">
+        <p style="color:#ff8800;font-size:13px">🔍 No se detectaron equipos</p>
+        <p style="color:#888;font-size:12px;margin-top:6px">Intenta enfocar el marcador de la transmisión o acercar más la cámara al texto.</p>
+        <button onclick="showScreen('camera')" class="btn-action" style="margin-top:10px;width:100%">📸 Volver a intentar</button>
       </div>`;
   }
 
-  // Info de detección
+  // 2. Imagen capturada pequeña
+  html += `<img src="${imageData}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-bottom:6px" alt="Captura">
+    <p style="font-size:10px;color:#555;text-align:center;margin-bottom:8px">Analizado con: ${methodLabel}</p>`;
+
+  // 3. Detalles colapsados al final
   if (labels.length > 0) {
-    html += `<details style="margin-top:8px"><summary style="color:#555;font-size:12px;cursor:pointer">Labels detectados</summary>
+    html += `<details style="margin-top:4px"><summary style="color:#555;font-size:11px;cursor:pointer">Labels detectados</summary>
       <p style="color:#666;font-size:11px;margin-top:4px;background:#111;padding:8px;border-radius:6px">${labels.join(', ')}</p></details>`;
   }
   if (textLines.length > 0 && textLines[0]) {
-    html += `<details style="margin-top:4px"><summary style="color:#555;font-size:12px;cursor:pointer">Texto detectado</summary>
+    html += `<details style="margin-top:4px"><summary style="color:#555;font-size:11px;cursor:pointer">Texto detectado</summary>
       <pre style="color:#666;font-size:11px;white-space:pre-wrap;margin-top:4px;background:#111;padding:8px;border-radius:6px">${textLines.join('\n')}</pre></details>`;
   }
 
@@ -727,7 +730,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.files[0]) processImageFromFile(e.target.files[0]);
     e.target.value = '';
   });
-  $('#btn-search').addEventListener('click', () => { showScreen('search'); $('#search-input').focus(); showPopularTeams(); });
   $('#btn-back-search').addEventListener('click', () => showScreen('camera'));
   $('#btn-back-stats').addEventListener('click', () => showScreen('search'));
   $('#btn-back-match').addEventListener('click', () => showScreen('stats'));
