@@ -437,10 +437,11 @@ async function loadTeamStats(teamId) {
   showScreen('stats');
 
   // Si el ID empieza con 'espn:', usar ESPN API (Liga MX)
+  // Se llama directo desde el navegador porque ESPN bloquea IPs de servidores cloud
   if (String(teamId).startsWith('espn:')) {
     const espnId = teamId.replace('espn:', '');
     try {
-      const data = await fetch(`/espn/apis/site/v2/sports/soccer/mex.1/teams/${espnId}/schedule`).then(r => r.json());
+      const data = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/teams/${espnId}/schedule`).then(r => r.json());
       renderESPNStats(data);
     } catch (err) {
       console.error(err);
