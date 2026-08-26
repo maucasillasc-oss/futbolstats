@@ -460,7 +460,9 @@ async function loadTeamStats(teamId) {
   } finally { showLoading(false); }
 }
 
-const TSDB_BASE = 'https://www.thesportsdb.com/api/v1/json/123';
+// Usa el proxy local /tsdb/ (con caché) en vez de llamar directo a TheSportsDB.
+// Así 500 usuarios comparten la misma respuesta cacheada.
+const TSDB_BASE = '/tsdb';
 const LIGAMX_LEAGUE_ID = '4350';
 
 async function renderLigaMXStats(tsdbId) {
