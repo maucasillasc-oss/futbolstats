@@ -71,45 +71,41 @@ const TEAM_DB = {
   'betis': { name: 'Real Betis', id: 90 },
   'real betis': { name: 'Real Betis', id: 90 },
   'valencia': { name: 'Valencia', id: 95 },
-  // --- Liga MX (usan ESPN API, prefijo 'espn:') ---
-  'america': { name: 'América', id: 'espn:227' },
-  'américa': { name: 'América', id: 'espn:227' },
-  'ame': { name: 'América', id: 'espn:227' },
-  'aguilas': { name: 'América', id: 'espn:227' },
-  'águilas': { name: 'América', id: 'espn:227' },
-  'chivas': { name: 'Guadalajara', id: 'espn:219' },
-  'guadalajara': { name: 'Guadalajara', id: 'espn:219' },
-  'gdl': { name: 'Guadalajara', id: 'espn:219' },
-  'cruz azul': { name: 'Cruz Azul', id: 'espn:218' },
-  'caz': { name: 'Cruz Azul', id: 'espn:218' },
-  'monterrey': { name: 'Monterrey', id: 'espn:220' },
-  'rayados': { name: 'Monterrey', id: 'espn:220' },
-  'mty': { name: 'Monterrey', id: 'espn:220' },
-  'tigres': { name: 'Tigres UANL', id: 'espn:232' },
-  'uanl': { name: 'Tigres UANL', id: 'espn:232' },
-  'pumas': { name: 'Pumas UNAM', id: 'espn:233' },
-  'unam': { name: 'Pumas UNAM', id: 'espn:233' },
-  'toluca': { name: 'Toluca', id: 'espn:223' },
-  'tol': { name: 'Toluca', id: 'espn:223' },
-  'santos': { name: 'Santos Laguna', id: 'espn:225' },
-  'santos laguna': { name: 'Santos Laguna', id: 'espn:225' },
-  'leon': { name: 'León', id: 'espn:228' },
-  'león': { name: 'León', id: 'espn:228' },
-  'pachuca': { name: 'Pachuca', id: 'espn:234' },
-  'tuzos': { name: 'Pachuca', id: 'espn:234' },
-  'atlas': { name: 'Atlas', id: 'espn:216' },
-  'necaxa': { name: 'Necaxa', id: 'espn:229' },
-  'puebla': { name: 'Puebla', id: 'espn:231' },
-  'queretaro': { name: 'Querétaro', id: 'espn:222' },
-  'querétaro': { name: 'Querétaro', id: 'espn:222' },
-  'tijuana': { name: 'Tijuana', id: 'espn:10125' },
-  'xolos': { name: 'Tijuana', id: 'espn:10125' },
-  'mazatlan': { name: 'Mazatlán FC', id: 'espn:20702' },
-  'mazatlán': { name: 'Mazatlán FC', id: 'espn:20702' },
-  'juarez': { name: 'FC Juárez', id: 'espn:17851' },
-  'juárez': { name: 'FC Juárez', id: 'espn:17851' },
-  'san luis': { name: 'Atlético de San Luis', id: 'espn:15720' },
-  'atletico san luis': { name: 'Atlético de San Luis', id: 'espn:15720' },
+  // --- Liga MX (usan TheSportsDB, prefijo 'tsdb:') ---
+  'america': { name: 'América', id: 'tsdb:134193' },
+  'américa': { name: 'América', id: 'tsdb:134193' },
+  'ame': { name: 'América', id: 'tsdb:134193' },
+  'aguilas': { name: 'América', id: 'tsdb:134193' },
+  'águilas': { name: 'América', id: 'tsdb:134193' },
+  'chivas': { name: 'Guadalajara', id: 'tsdb:134206' },
+  'guadalajara': { name: 'Guadalajara', id: 'tsdb:134206' },
+  'gdl': { name: 'Guadalajara', id: 'tsdb:134206' },
+  'cruz azul': { name: 'Cruz Azul', id: 'tsdb:134196' },
+  'caz': { name: 'Cruz Azul', id: 'tsdb:134196' },
+  'monterrey': { name: 'Monterrey', id: 'tsdb:134198' },
+  'rayados': { name: 'Monterrey', id: 'tsdb:134198' },
+  'mty': { name: 'Monterrey', id: 'tsdb:134198' },
+  'tigres': { name: 'Tigres UANL', id: 'tsdb:134197' },
+  'uanl': { name: 'Tigres UANL', id: 'tsdb:134197' },
+  'pumas': { name: 'Pumas UNAM', id: 'tsdb:134201' },
+  'unam': { name: 'Pumas UNAM', id: 'tsdb:134201' },
+  'toluca': { name: 'Toluca', id: 'tsdb:134204' },
+  'tol': { name: 'Toluca', id: 'tsdb:134204' },
+  'santos': { name: 'Santos Laguna', id: 'tsdb:134192' },
+  'santos laguna': { name: 'Santos Laguna', id: 'tsdb:134192' },
+  'leon': { name: 'León', id: 'tsdb:134207' },
+  'león': { name: 'León', id: 'tsdb:134207' },
+  'pachuca': { name: 'Pachuca', id: 'tsdb:134191' },
+  'tuzos': { name: 'Pachuca', id: 'tsdb:134191' },
+  'atlas': { name: 'Atlas', id: 'tsdb:134195' },
+  'necaxa': { name: 'Necaxa', id: 'tsdb:135662' },
+  'puebla': { name: 'Puebla', id: 'tsdb:134199' },
+  'queretaro': { name: 'Querétaro', id: 'tsdb:134194' },
+  'querétaro': { name: 'Querétaro', id: 'tsdb:134194' },
+  'tijuana': { name: 'Tijuana', id: 'tsdb:134202' },
+  'xolos': { name: 'Tijuana', id: 'tsdb:134202' },
+  'juarez': { name: 'Juárez', id: 'tsdb:136855' },
+  'juárez': { name: 'Juárez', id: 'tsdb:136855' },
 };
 
 function findTeamInText(text) {
@@ -391,12 +387,12 @@ const POPULAR_TEAMS = [
   { id: 5, name: 'Bayern Munich', crest: '🔴' },
   { id: 57, name: 'Arsenal', crest: '🔴' },
   // Liga MX
-  { id: 'espn:227', name: 'América', crest: '🦅' },
-  { id: 'espn:219', name: 'Chivas', crest: '🐐' },
-  { id: 'espn:218', name: 'Cruz Azul', crest: '🔵' },
-  { id: 'espn:220', name: 'Monterrey', crest: '⚪🔵' },
-  { id: 'espn:232', name: 'Tigres', crest: '🐯' },
-  { id: 'espn:233', name: 'Pumas', crest: '🐾' },
+  { id: 'tsdb:134193', name: 'América', crest: '🦅' },
+  { id: 'tsdb:134206', name: 'Chivas', crest: '🐐' },
+  { id: 'tsdb:134196', name: 'Cruz Azul', crest: '🔵' },
+  { id: 'tsdb:134198', name: 'Monterrey', crest: '⚪🔵' },
+  { id: 'tsdb:134197', name: 'Tigres', crest: '🐯' },
+  { id: 'tsdb:134201', name: 'Pumas', crest: '🐾' },
 ];
 
 function showPopularTeams() {
@@ -436,13 +432,11 @@ async function loadTeamStats(teamId) {
   showLoading(true, 'Cargando estadísticas...');
   showScreen('stats');
 
-  // Si el ID empieza con 'espn:', usar ESPN API (Liga MX)
-  // Se llama directo desde el navegador porque ESPN bloquea IPs de servidores cloud
-  if (String(teamId).startsWith('espn:')) {
-    const espnId = teamId.replace('espn:', '');
+  // Si el ID empieza con 'tsdb:', usar TheSportsDB (Liga MX)
+  if (String(teamId).startsWith('tsdb:')) {
+    const tsdbId = teamId.replace('tsdb:', '');
     try {
-      const data = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/teams/${espnId}/schedule`).then(r => r.json());
-      renderESPNStats(data);
+      await renderLigaMXStats(tsdbId);
     } catch (err) {
       console.error(err);
       $('#stats-content').innerHTML = '<div class="no-results">Error al cargar estadísticas</div>';
@@ -463,64 +457,67 @@ async function loadTeamStats(teamId) {
   } finally { showLoading(false); }
 }
 
-function renderESPNStats(data) {
-  const team = data.team;
-  const events = (data.events || []).filter(e =>
-    e.competitions?.[0]?.competitors?.[0]?.score
-  );
+const TSDB_BASE = 'https://www.thesportsdb.com/api/v1/json/123';
+const LIGAMX_LEAGUE_ID = '4350';
 
-  let wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0;
+async function renderLigaMXStats(tsdbId) {
+  // 1. Datos del equipo
+  const teamData = await fetch(`${TSDB_BASE}/lookupteam.php?id=${tsdbId}`).then(r => r.json());
+  const team = teamData.teams?.[0];
+  if (!team) { $('#stats-content').innerHTML = '<div class="no-results">Equipo no encontrado</div>'; return; }
 
-  const matchCards = events.map(e => {
-    const comp = e.competitions[0];
-    const home = comp.competitors.find(c => c.homeAway === 'home');
-    const away = comp.competitors.find(c => c.homeAway === 'away');
-    if (!home?.score || !away?.score) return '';
+  // 2. Tabla de posiciones (estadísticas W/D/L/goles)
+  let stats = null;
+  try {
+    const table = await fetch(`${TSDB_BASE}/lookuptable.php?l=${LIGAMX_LEAGUE_ID}&s=2025-2026`).then(r => r.json());
+    stats = (table.table || []).find(row => row.idTeam === tsdbId);
+  } catch (e) { console.warn('No standings', e); }
 
-    const hs = parseFloat(home.score.displayValue) || 0;
-    const as = parseFloat(away.score.displayValue) || 0;
-    const isHome = home.team.id === team.id;
-    const myGoals = isHome ? hs : as;
-    const theirGoals = isHome ? as : hs;
+  // 3. Últimos partidos
+  let matchCards = '';
+  try {
+    const last = await fetch(`${TSDB_BASE}/eventslast.php?id=${tsdbId}`).then(r => r.json());
+    matchCards = (last.results || []).map(m => {
+      const hs = m.intHomeScore, as = m.intAwayScore;
+      const isHome = m.idHomeTeam === tsdbId;
+      const myGoals = parseInt(isHome ? hs : as);
+      const theirGoals = parseInt(isHome ? as : hs);
+      const r = myGoals > theirGoals ? '🟢' : myGoals === theirGoals ? '🟡' : '🔴';
+      return `<div class="match-card">
+        <div class="match-teams"><div>${r} ${m.strEvent}</div>
+        <div class="match-date">${m.dateEvent || ''}</div></div>
+        <div class="match-score">${hs} - ${as}</div></div>`;
+    }).join('');
+  } catch (e) { console.warn('No matches', e); }
 
-    goalsFor += myGoals;
-    goalsAgainst += theirGoals;
-    if (myGoals > theirGoals) wins++;
-    else if (myGoals === theirGoals) draws++;
-    else losses++;
-
-    const r = myGoals > theirGoals ? '🟢' : myGoals === theirGoals ? '🟡' : '🔴';
-    const date = new Date(e.date).toLocaleDateString('es');
-
-    return `<div class="match-card">
-      <div class="match-teams"><div>${r} ${home.team.displayName} vs ${away.team.displayName}</div>
-      <div class="match-date">${date}</div></div>
-      <div class="match-score">${hs} - ${as}</div></div>`;
-  }).join('');
-
+  const wins = stats ? parseInt(stats.intWin) : 0;
+  const draws = stats ? parseInt(stats.intDraw) : 0;
+  const losses = stats ? parseInt(stats.intLoss) : 0;
+  const gf = stats ? parseInt(stats.intGoalsFor) : 0;
+  const ga = stats ? parseInt(stats.intGoalsAgainst) : 0;
   const total = wins + draws + losses;
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
 
   $('#stats-content').innerHTML = `
     <div class="team-header">
-      <img src="${team.logo}" alt="${team.displayName}">
-      <h1>${team.displayName}</h1>
-      <p>Liga MX · ${team.recordSummary || ''}</p>
-      <p style="font-size:12px;color:#666;margin-top:4px">📊 ${team.standingSummary || ''}</p>
+      <img src="${team.strBadge}" alt="${team.strTeam}">
+      <h1>${team.strTeam}</h1>
+      <p>Liga MX · Fundado: ${team.intFormedYear || 'N/A'}</p>
+      <p style="font-size:12px;color:#666;margin-top:4px">🏟️ ${team.strStadium || ''}</p>
     </div>
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-value">${wins}</div><div class="stat-label">Ganados</div></div>
       <div class="stat-card"><div class="stat-value">${draws}</div><div class="stat-label">Empates</div></div>
       <div class="stat-card"><div class="stat-value">${losses}</div><div class="stat-label">Perdidos</div></div>
-      <div class="stat-card"><div class="stat-value">${goalsFor}</div><div class="stat-label">Goles a Favor</div></div>
-      <div class="stat-card"><div class="stat-value">${goalsAgainst}</div><div class="stat-label">Goles en Contra</div></div>
+      <div class="stat-card"><div class="stat-value">${gf}</div><div class="stat-label">Goles a Favor</div></div>
+      <div class="stat-card"><div class="stat-value">${ga}</div><div class="stat-label">Goles en Contra</div></div>
       <div class="stat-card"><div class="stat-value">${winRate}%</div><div class="stat-label">% Victoria</div></div>
     </div>
-    <div class="section-title">Partidos de la Temporada</div>
-    ${matchCards || '<div class="no-results">Sin partidos registrados</div>'}`;
+    <div class="section-title">Últimos Partidos</div>
+    ${matchCards || '<div class="no-results">Sin partidos recientes disponibles</div>'}`;
 
   // Cargar momios
-  loadOddsForTeam(team.displayName, 'soccer_mexico_ligamx');
+  loadOddsForTeam(team.strTeam, 'soccer_mexico_ligamx');
 }
 
 // --- Momios / Odds ---
