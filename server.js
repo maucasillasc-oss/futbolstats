@@ -15,6 +15,46 @@ const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 
 const ODDS_API_KEY = process.env.ODDS_API_KEY || '469b71b8a45248c9e7039776794d4b26';
 
+// --- Caché en memoria ---
+// Guarda respuestas de las APIs externas para no saturar sus límites.
+// Ideal cuando muchos usuarios consultan los mismos equipos/partido.
+const cache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
+function getCache(key) {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.time > CACHE_TTL) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCache(key, data) {
+  cache.set(key, { data, time: Date.now() });
+}
+
+// Helper: hace GET a una API externa con caché. Devuelve Promise<string>
+function cachedGet(cacheKey, options) {
+  return new Promise((resolve, reject) => {
+    const cached = getCache(cacheKey);
+    if (cached !== null) {
+      resolve({ data: cached, fromCache: true });
+      return;
+    }
+    https.get(options, (apiRes) => {
+      let data = '';
+      apiRes.on('data', c => data += c);
+      apiRes.on('end', () => {
+        // Solo cachear respuestas exitosas
+        if (apiRes.statusCode === 200) setCache(cacheKey, data);
+        resolve({ data, fromCache: false, statusCode: apiRes.statusCode });
+      });
+    }).on('error', reject);
+  });
+}
+
 const MIME = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -132,21 +172,34 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Football API proxy
+  // Football API proxy (con caché)
   if (req.url.startsWith('/api/')) {
     const apiPath = '/v4' + req.url.slice(4);
-    https.get({
+    cachedGet(`fd:${apiPath}`, {
       hostname: API_HOST,
       path: apiPath,
       headers: { 'X-Auth-Token': API_KEY },
-    }, (apiRes) => {
-      let data = '';
-      apiRes.on('data', c => data += c);
-      apiRes.on('end', () => {
-        res.writeHead(apiRes.statusCode, { 'Content-Type': 'application/json' });
-        res.end(data);
-      });
-    }).on('error', (err) => {
+    }).then(({ data, fromCache }) => {
+      res.writeHead(200, { 'Content-Type': 'application/json', 'X-Cache': fromCache ? 'HIT' : 'MISS' });
+      res.end(data);
+    }).catch((err) => {
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: err.message }));
+    });
+    return;
+  }
+
+  // TheSportsDB proxy (con caché) - Liga MX
+  if (req.url.startsWith('/tsdb/')) {
+    const tsdbPath = '/api/v1/json/123/' + req.url.slice(6);
+    cachedGet(`tsdb:${tsdbPath}`, {
+      hostname: 'www.thesportsdb.com',
+      path: tsdbPath,
+      headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+    }).then(({ data, fromCache }) => {
+      res.writeHead(200, { 'Content-Type': 'application/json', 'X-Cache': fromCache ? 'HIT' : 'MISS' });
+      res.end(data);
+    }).catch((err) => {
       res.writeHead(500);
       res.end(JSON.stringify({ error: err.message }));
     });
@@ -178,25 +231,40 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Odds API proxy
+  // Odds API proxy (con caché - crítico por el límite de 500/mes)
   if (req.url.startsWith('/odds/')) {
     const sport = req.url.slice(6).split('?')[0];
     const oddsPath = `/v4/sports/${sport}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h&oddsFormat=decimal`;
-    https.get({
+    cachedGet(`odds:${sport}`, {
       hostname: 'api.the-odds-api.com',
       path: oddsPath,
       headers: { 'Accept': 'application/json' },
-    }, (oddsRes) => {
-      let data = '';
-      oddsRes.on('data', c => data += c);
-      oddsRes.on('end', () => {
-        res.writeHead(oddsRes.statusCode, { 'Content-Type': 'application/json' });
-        res.end(data);
-      });
-    }).on('error', (err) => {
+    }).then(({ data, fromCache }) => {
+      res.writeHead(200, { 'Content-Type': 'application/json', 'X-Cache': fromCache ? 'HIT' : 'MISS' });
+      res.end(data);
+    }).catch((err) => {
       res.writeHead(500);
       res.end(JSON.stringify({ error: err.message }));
     });
+    return;
+  }
+
+  // Endpoint para pre-calentar el caché antes del evento
+  if (req.url === '/warmup') {
+    const targets = [
+      // Liga MX: tabla de posiciones + equipos populares
+      { key: 'tsdb:/api/v1/json/123/lookuptable.php?l=4350&s=2025-2026', host: 'www.thesportsdb.com', path: '/api/v1/json/123/lookuptable.php?l=4350&s=2025-2026' },
+      { key: 'odds:soccer_mexico_ligamx', host: 'api.the-odds-api.com', path: `/v4/sports/soccer_mexico_ligamx/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h&oddsFormat=decimal` },
+    ];
+    Promise.all(targets.map(t => cachedGet(t.key, { hostname: t.host, path: t.path, headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } })))
+      .then(() => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'warmed', cached_keys: cache.size }));
+      })
+      .catch((err) => {
+        res.writeHead(500);
+        res.end(JSON.stringify({ error: err.message }));
+      });
     return;
   }
 
